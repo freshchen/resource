@@ -20,15 +20,18 @@ pre_check() {
 }
 
 compress_img() {
-    local png_images=($(git status --porcelain | grep '^??' | grep '.png$' | awk '{print $2}'))
-    local jpg_images=($(git status --porcelain | grep '^??' | grep '.jpg$' | awk '{print $2}'))
+    local images=$(git status --porcelain | grep '^??' | grep -E '.png$|.jpg$' | awk '{print $2}')
     
-    if [[ -n "${png_images}" ]]; then
-        optipng -preserve ${png_images[@]}
-    fi
-
-    if [[ -n "${jpg_images}" ]]; then
-        jpegoptim --strip-all --all-progressive -preserve -o -f -m 90 ${jpg_images[@]}
+    if [[ -n "${images}" ]]; then
+        for img in ${images[@]} ; do
+            jpegoptim --strip-all --all-progressive -preserve -o -f -m 90 ${img} > /dev/null 2>&1
+            if [[ $? -eq 1 ]]; then
+                optipng -preserve ${img} > /dev/null 2>&1
+                if [[ $? -eq 1 ]] ; then
+                    echo compress img failed.
+                fi
+            fi
+        done
     fi
 }
 
@@ -41,8 +44,8 @@ post_push() {
 }
 
 main() {
-    pre_check
-    compress_img
+    pre_check || exit 1
+    compress_img || exit 1
     post_push
 }
 
