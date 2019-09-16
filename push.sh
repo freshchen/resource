@@ -20,7 +20,7 @@ pre_check() {
 }
 
 compress_img() {
-    local images=$(git status --porcelain | grep '^??' | grep -E '.png$|.jpg$' | awk '{print $2}')
+    local images=$(git status --porcelain | grep '^??' | grep -E '.png$|.PNG$|.jpg$' | awk '{print $2}')
     
     if [[ -n "${images}" ]]; then
         for img in ${images[@]} ; do
