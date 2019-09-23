@@ -10,8 +10,8 @@ cd ${CURRENT_PATH}
 
 
 pre_check() {
-    local status=$(git pull)
-    if [[ ${status} == "Already up to date." ]]; then
+    git pull
+    if [[ $? == 0 ]]; then
         echo 'Pre-Check successfully.'
     else
         echo 'Need merge.'
@@ -38,6 +38,8 @@ compress_img() {
 post_push() {
     echo 'Start to push.'
     git add ./img/ || exit 1
+    chown -R root:root ./redis/ || exit 1
+    git add ./redis/ || exit 1
     git commit -m "${COMMENT}" || exit 1
     git push origin master || exit 1
     echo 'Push successfully.'
