@@ -40,13 +40,15 @@ post_push() {
     git add ./img/ || exit 1
     chown -R root:root ./redis/ || exit 1
     git add ./redis/ || exit 1
+    git add ./js/ || exit 1
+    git add ./push.sh || exit 1
     git commit -m "${COMMENT}" || exit 1
     git push origin master || exit 1
     echo 'Push successfully.'
 }
 
 main() {
-    pre_check || exit 1
+    #pre_check || exit 1
     compress_img || exit 1
     post_push
 }
